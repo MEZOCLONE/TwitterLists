@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <ImageView
+        android:id="@+id/twitter_list_member_image"
+        android:src="@drawable/ic_launcher"
+        android:layout_width="@dimen/twitter_list_member_image_size"
+        android:layout_height="@dimen/twitter_list_member_image_size"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"/>
+
+    <TextView
+        android:id="@+id/twitter_list_member_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/twitter_list_member_image"
+        android:layout_toRightOf="@id/twitter_list_member_image"
+        android:textStyle="bold"
+        android:text="Marques Brownlee"/>
+
+    <TextView
+        android:id="@+id/twitter_list_member_twittername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/twitter_list_member_name"
+        android:layout_toRightOf="@id/twitter_list_member_name"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:text="MKBHD"/>
+
+    <ImageView
+        android:id="@+id/twitter_list_member_action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/member_delete"/>
+
+    <TextView
+        android:id="@+id/twitter_list_member_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/twitter_list_member_image"
+        android:layout_toRightOf="@id/twitter_list_member_image"
+        android:layout_below="@id/twitter_list_member_name"
+        android:layout_toLeftOf="@id/twitter_list_member_action"
+        android:layout_toStartOf="@id/twitter_list_member_action"
+        android:text="Here comes the description of the user."/>
+</RelativeLayout>
