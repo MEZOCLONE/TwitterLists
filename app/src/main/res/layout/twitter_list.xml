@@ -21,14 +21,16 @@
         android:textStyle="bold"
         android:layout_toEndOf="@id/twitter_list_privacy"
         android:layout_toRightOf="@id/twitter_list_privacy"
-        android:text="Friends"/>
+        android:text="Friends"
+        style="@style/listContainerText"/>
 
     <TextView
         android:id="@+id/twitter_list_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/twitter_list_name"
-        android:text="Description of the list"/>
+        android:text="Description of the list"
+        style="@style/listContainerText"/>
 
     <TextView
         android:id="@+id/twitter_list_member_count"
@@ -36,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/twitter_list_description"
         android:textStyle="italic"
-        android:text="19 members"/>
+        android:text="19 members"
+        style="@style/listContainerText"/>
 
 </RelativeLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="listContainerBackground">
+        <item name="android:background">@color/twitterDarkBlue</item>
+    </style>
+
+    <style name="listContainerText">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
+    <style name="pagerTabStrip">
+        <item name="android:background">@color/twitterDarkBlue</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+</resources>

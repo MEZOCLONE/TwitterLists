@@ -5,10 +5,13 @@ import android.app.ListFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.tierep.twitterlists.R;
 import com.tierep.twitterlists.Session;
 import com.tierep.twitterlists.TwitterListsAdapter;
 
@@ -132,6 +135,11 @@ public class ListsFragment extends ListFragment {
                 }
             }.execute();
         }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.list_content, container, false);
     }
 
     @Override

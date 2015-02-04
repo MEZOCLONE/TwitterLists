@@ -1,17 +1,21 @@
 <resources>
-
     <style name="AppTheme" parent="AppTheme.Base"/>
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/twitterLogoBlue</item>
+        <item name="colorPrimaryDark">@color/twitterLogoBlue</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
 
-    <style name="LoginTheme" parent="AppTheme">
+    <style name="LoginTheme" parent="AppTheme"/>
 
+    <style name="listContainerBackground"/>
+
+    <style name="listContainerText"/>
+
+    <style name="pagerTabStrip">
+        <item name="android:background">@color/twitterLogoBlue</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
     </style>
-
-    <color name="colorPrimary">#999999</color>
 </resources>
