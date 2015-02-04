@@ -3,8 +3,6 @@ package com.tierep.twitterlists.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -36,12 +34,10 @@ public class LoginActivity extends Activity {
         }
 
         Session mySession = Session.getInstance();
-        mySession.initialize(this);
-
         final TwitterAuthConfig authConfig = new TwitterAuthConfig(mySession.getTWITTER_KEY(), mySession.getTWITTER_SECRET());
 
         Fabric.with(this, new Twitter(authConfig));
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         loginButton = (TwitterLoginButton) findViewById(R.id.login_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
@@ -52,9 +48,9 @@ public class LoginActivity extends Activity {
                 TwitterAuthToken authToken = session.getAuthToken();
 
                 Session mySession = Session.getInstance();
-                mySession.setAccessToken(authToken.token);
-                mySession.setAccessTokenSecret(authToken.secret);
-                mySession.setUserId(session.getUserId());
+                mySession.setAccessToken(authToken.token, LoginActivity.this);
+                mySession.setAccessTokenSecret(authToken.secret, LoginActivity.this);
+                mySession.setUserId(session.getUserId(), LoginActivity.this);
 
                 Intent intent = new Intent(LoginActivity.this, ListActivity.class);
                 startActivity(intent);
@@ -72,27 +68,5 @@ public class LoginActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         loginButton.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

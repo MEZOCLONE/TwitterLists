@@ -1,11 +1,22 @@
 package com.tierep.twitterlists.ui;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.ListFragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.tierep.twitterlists.R;
+import com.tierep.twitterlists.Session;
+import com.tierep.twitterlists.TwitterListsAdapter;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
 import twitter4j.UserList;
 
 
@@ -26,7 +37,7 @@ import twitter4j.UserList;
  * to listen for item selections.
  */
 public class ListActivity extends Activity
-        implements ListsFragment.Callbacks {
+        implements ListsFragment.Callbacks, ManageListDialogFragment.ManageListDialogListener {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -52,8 +63,6 @@ public class ListActivity extends Activity
                     .findFragmentById(R.id.twitterlist_list))
                     .setActivateOnItemClick(true);
         }
-
-        // TODO: If exposing deep links into your app, handle intents here.
     }
 
     /**
@@ -62,16 +71,13 @@ public class ListActivity extends Activity
      */
     @Override
     public void onItemSelected(UserList userList) {
-        long id = userList.getId();
-        String name = userList.getName();
 
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putLong(ListDetailFragment.ARG_LIST_ID, id);
-            arguments.putString(ListDetailFragment.ARG_LIST_NAME, name);
+            arguments.putSerializable(ListDetailFragment.ARG_USERLIST, userList);
             ListDetailViewPagerFragment fragment = new ListDetailViewPagerFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -82,9 +88,76 @@ public class ListActivity extends Activity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ListDetailActivity.class);
-            detailIntent.putExtra(ListDetailMembersFragment.ARG_LIST_ID, id);
-            detailIntent.putExtra(ListDetailMembersFragment.ARG_LIST_NAME, name);
+            detailIntent.putExtra(ListDetailFragment.ARG_USERLIST, userList);
             startActivity(detailIntent);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.twitter_list_new:
+                createNewList();
+                return true;
+            case R.id.log_out:
+                logOut();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void createNewList() {
+        DialogFragment dialog = new ManageListDialogFragment();
+        dialog.show(getFragmentManager(), "dialog_new_twitter_list");
+    }
+
+    private void logOut() {
+        Session.getInstance().clearSession(this);
+        finish();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onManageListDialogPositiveClick(final ManageListDialogFragment.ManageListModel model) {
+        new AsyncTask<Void, Void, UserList>() {
+            @Override
+            protected UserList doInBackground(Void... params) {
+                Twitter twitter = Session.getInstance().getTwitterInstance();
+                try {
+                    UserList result = twitter.createUserList(model.name, model.isPublicList, model.description);
+                    return result;
+                } catch (TwitterException e) {
+                    Log.e("ERROR", "Error while creating new list", e);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(UserList result) {
+                super.onPostExecute(result);
+                if (result != null) { // Success
+                    ListFragment listFragment = (ListFragment) getFragmentManager().findFragmentById(R.id.twitterlist_list);
+                    TwitterListsAdapter adapter = (TwitterListsAdapter) listFragment.getListAdapter();
+                    adapter.add(result);
+                    adapter.notifyDataSetChanged();
+                } else {
+                    // TODO internationalize
+                    Toast.makeText(ListActivity.this, "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void onManageListDialogNegativeClick(DialogFragment dialog) {
+        // Do nothing
     }
 }

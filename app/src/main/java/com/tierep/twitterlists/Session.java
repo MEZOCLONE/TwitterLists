@@ -1,6 +1,8 @@
 package com.tierep.twitterlists;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,11 @@ import twitter4j.conf.ConfigurationBuilder;
  * Created by Pieter on 30/01/15.
  */
 public class Session {
+    private static final String PREFERENCE_FILE_KEY = "com.tierep.twitterlists.PREFERENCE_FILE_KEY";
+    private static final String KEY_ACCESSTOKEN = "Session.ACCESSTOKEN";
+    private static final String KEY_ACCESSTOKENSECRET = "Session.ACCESSTOKENSECRET";
+    private static final String KEY_USERID = "Session.USERID";
+
     private static final Session session = new Session();
 
     private String TWITTER_KEY;
@@ -37,7 +44,13 @@ public class Session {
     private Session() {
     }
 
-    public void initialize(Context context) {
+    /**
+     *
+     * @param context
+     * @return true if there are valid authorization tokens. False otherwise.
+     */
+    public boolean initialize(Context context) {
+        // Initialize consumer key and consumer secret
         InputStream in = context.getResources().openRawResource(R.raw.twitter4j);
         Properties prop = new Properties();
         try {
@@ -47,6 +60,22 @@ public class Session {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Initialize access tokens, if any.
+        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        accessToken = sharedPref.getString(KEY_ACCESSTOKEN, "");
+        accessTokenSecret = sharedPref.getString(KEY_ACCESSTOKENSECRET, "");
+        userId = sharedPref.getLong(KEY_USERID, 0);
+
+        Log.d("TOKENS", accessToken);
+        Log.d("TOKEN SECRET", accessTokenSecret);
+
+        if (!accessToken.equals("") && !accessTokenSecret.equals("")) {
+            return true; // TODO checken dat de tokens nog niet geinvalideerd zijn.
+        } else {
+            return false;
+        }
+        
     }
 
     public Twitter getTwitterInstance() {
@@ -66,7 +95,7 @@ public class Session {
     public AsyncTwitter getAsyncTwitterInstance() {
         if (asyncTwitterInstance == null) {
             ConfigurationBuilder cb = new ConfigurationBuilder();
-            cb.setDebugEnabled(true)
+            cb.setDebugEnabled(true) // TODO disable logging for production
                     .setOAuthConsumerKey(TWITTER_KEY)
                     .setOAuthConsumerSecret(TWITTER_SECRET)
                     .setOAuthAccessToken(accessToken)
@@ -76,6 +105,21 @@ public class Session {
             asyncTwitterInstance = factory.getInstance();
         }
         return asyncTwitterInstance;
+    }
+
+    /**
+     * Clears the current session by removing any access tokings and clearing the current Twiter instances.
+     * This can be used to log the user out of the app.
+     */
+    public void clearSession(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(KEY_ACCESSTOKEN, "");
+        editor.putString(KEY_ACCESSTOKENSECRET, "");
+        editor.putLong(KEY_USERID, 0);
+        editor.commit();
+
+        // TODO implement further
     }
 
     public static Session getInstance() {
@@ -90,19 +134,31 @@ public class Session {
         return TWITTER_KEY;
     }
 
-    public void setAccessToken(String accessToken) {
+    public void setAccessToken(String accessToken, Context context) {
         this.accessToken = accessToken;
+        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(KEY_ACCESSTOKEN, accessToken);
+        editor.commit();
     }
 
-    public void setAccessTokenSecret(String accessTokenSecret) {
+    public void setAccessTokenSecret(String accessTokenSecret, Context context) {
         this.accessTokenSecret = accessTokenSecret;
+        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(KEY_ACCESSTOKENSECRET, accessTokenSecret);
+        editor.commit();
     }
 
     public long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(long userId, Context context) {
         this.userId = userId;
+        SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong(KEY_USERID, userId);
+        editor.commit();
     }
 }

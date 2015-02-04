@@ -1,12 +1,18 @@
-package com.tierep.twitterlists;
+package com.tierep.twitterlists.adapters;
 
 import android.content.Context;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.koushikdutta.ion.Ion;
+import com.tierep.twitterlists.R;
 
 import java.util.List;
 
@@ -17,10 +23,9 @@ import twitter4j.User;
  * <p/>
  * Created by pieter on 31/01/15.
  */
-public class TwitterListMembersAdapter extends ArrayAdapter<User> {
+public class UsersWithActionAdapter extends ArrayAdapter<UserView> {
 
     long listId;
-    int actionDrawableId;
 
     /**
      * Constructor
@@ -29,10 +34,9 @@ public class TwitterListMembersAdapter extends ArrayAdapter<User> {
      * @param objects The objects to represent in the ListView.
      * @param listId  The Id of the twitter list that this adapter represents.
      */
-    public TwitterListMembersAdapter(Context context, List<User> objects, long listId, int actionDrawableId) {
+    public UsersWithActionAdapter(Context context, long listId, List<UserView> objects) {
         super(context, 0, objects);
         this.listId = listId;
-        this.actionDrawableId = actionDrawableId;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class TwitterListMembersAdapter extends ArrayAdapter<User> {
      * @param parent
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
         ViewHolder holder;
 
@@ -59,30 +63,63 @@ public class TwitterListMembersAdapter extends ArrayAdapter<User> {
             holder = new ViewHolder();
             holder.image = (ImageView) view.findViewById(R.id.twitter_list_member_image);
             holder.name = (TextView) view.findViewById(R.id.twitter_list_member_name);
-            holder.twitterName = (TextView) view.findViewById(R.id.twitter_list_member_twittername);
             holder.description = (TextView) view.findViewById(R.id.twitter_list_member_description);
             holder.action = (ImageView) view.findViewById(R.id.twitter_list_member_action);
-            holder.action.setImageResource(actionDrawableId);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
 
-        final User user = this.getItem(position);
-        // TODO juiste size nog bepalen van het te downloaden profile pic
-        new DownloadImageTask(holder.image).execute(user.getProfileImageURLHttps());
-        //Log.d("USER", "Profile image url: " + user.getProfileImageURL());
-        //Log.d("USER", "Profile image url https: " + user.getProfileImageURLHttps());
-        holder.name.setText(user.getName());
-        holder.twitterName.setText("@" + user.getScreenName());
+        final UserView userView = this.getItem(position);
+        final User user = userView.user;
+        final int actionDrawableId = userView.actionDrawableId;
+
+        Ion.with(holder.image)
+                .placeholder(R.drawable.member_default_avatar)
+                .load(determineProfileImageUrl(user));
+        holder.name.setText(createTwitterNameString(user));
         holder.description.setText(user.getDescription());
         holder.action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onMemberClick(listId, user);
+                onMemberClick(position, listId, userView);
             }
         });
+        holder.action.setImageResource(actionDrawableId);
         return view;
+    }
+
+    /**
+     * Determines which size of the profile image should be downloaded. On mdpi (baseline) the space
+     * reserved in the layout is 48px x 48px.
+     *
+     * Twitter profile pictures are available in the following sizes:
+     * - mini: 24px x 24px
+     * - normal: 48px x 48px
+     * - bigger: 73px x 73px
+     *
+     * @param user
+     * @return
+     */
+    private String determineProfileImageUrl(final User user) {
+        String result;
+
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        switch (metrics.densityDpi) {
+            case DisplayMetrics.DENSITY_LOW:
+                result = user.getMiniProfileImageURLHttps();
+                break;
+            case DisplayMetrics.DENSITY_MEDIUM:
+                result = user.getProfileImageURLHttps();
+                break;
+            default:
+                result = user.getBiggerProfileImageURLHttps();
+        }
+        return result;
+    }
+
+    private Spanned createTwitterNameString(final User user) {
+        return Html.fromHtml("<b>" + user.getName() + "</b>" + " @" + user.getScreenName());
     }
 
     /**
@@ -90,16 +127,15 @@ public class TwitterListMembersAdapter extends ArrayAdapter<User> {
      * action on the member is invoked.
      *
      * @param listId
-     * @param user
+     * @param userView
      */
-    protected void onMemberClick(long listId, final User user) {
+    protected void onMemberClick(int position, long listId, final UserView userView) {
 
     }
 
     private static class ViewHolder {
         ImageView image;
         TextView name;
-        TextView twitterName;
         TextView description;
         ImageView action;
     }

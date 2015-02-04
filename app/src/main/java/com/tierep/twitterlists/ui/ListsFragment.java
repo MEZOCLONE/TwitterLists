@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.tierep.twitterlists.Session;
 import com.tierep.twitterlists.TwitterListsAdapter;
 
-import twitter4j.ResponseList;
+import java.util.LinkedList;
+
+import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.UserList;
@@ -33,6 +37,14 @@ public class ListsFragment extends ListFragment {
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+
+    /**
+     * The serialization (saved instance state) Bundle key representing the
+     * lists of the current user.
+     */
+    private static final String STATE_USERLISTS = "userlists";
+
+    private LinkedList<UserList> userLists;
 
     /**
      * The fragment's current callback object, which is notified of list item
@@ -78,27 +90,48 @@ public class ListsFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        new AsyncTask<Void, Void, ResponseList<UserList>>() {
-            @Override
-            protected ResponseList<UserList> doInBackground(Void... params) {
-                Twitter twitter = Session.getInstance().getTwitterInstance();
-                try {
-                    return twitter.getUserLists(Session.getInstance().getUserId());
-                } catch (TwitterException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
+        if (savedInstanceState != null) {
+            this.userLists = (LinkedList<UserList>) savedInstanceState.getSerializable(STATE_USERLISTS);
+            setListAdapter(new TwitterListsAdapter(getActivity(), userLists));
+        } else {
+            new AsyncTask<Void, Void, LinkedList<UserList>>() {
+                @Override
+                protected LinkedList<UserList> doInBackground(Void... params) {
+                    Twitter twitter = Session.getInstance().getTwitterInstance();
+                    try {
+                        LinkedList<UserList> result = new LinkedList<UserList>();
+                        PagableResponseList<UserList> response = null;
+                        do {
+                            if (response == null) {
+                                response = twitter.getUserListsOwnerships(Session.getInstance().getUserId(), 1000, -1);
+                                result.addAll(response);
+                            } else {
+                                response = twitter.getUserListsOwnerships(Session.getInstance().getUserId(), 1000, response.getNextCursor());
+                                result.addAll(response);
+                            }
+                        } while (response.hasNext());
 
-            @Override
-            protected void onPostExecute(ResponseList<UserList> userLists) {
-                if (userLists != null) {
-                    setListAdapter(new TwitterListsAdapter(getActivity(), userLists));
+                        return result;
+                    } catch (TwitterException e) {
+                        Log.e("ERROR", "Error during fetching lists of the user.", e);
+                        return null;
+                    }
                 }
-                // TODO hier nog de case afhandelen dat userLists null is.
-                // TODO ook speciaal geval afhandelen dat de user geen lijsten heeft (count = 0).
-            }
-        }.execute();
+
+                @Override
+                protected void onPostExecute(LinkedList<UserList> result) {
+                    if (result != null) {
+                        ListsFragment.this.userLists = result;
+                        setListAdapter(new TwitterListsAdapter(getActivity(), result));
+                    } else {
+                        // TODO internationalize
+                        Toast.makeText(getActivity(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                    }
+                    // TODO in case of error permanemente melding geven (loading.. balk weghalen !!)
+                    // TODO ook speciaal geval afhandelen dat de user geen lijsten heeft (count = 0).
+                }
+            }.execute();
+        }
     }
 
     @Override
@@ -150,6 +183,7 @@ public class ListsFragment extends ListFragment {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
+        outState.putSerializable(STATE_USERLISTS, userLists);
     }
 
     /**

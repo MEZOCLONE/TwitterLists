@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,25 +13,23 @@ import android.view.ViewGroup;
 
 import com.tierep.twitterlists.R;
 
+import twitter4j.UserList;
+
 /**
  * Created by pieter on 02/02/15.
  */
 public class ListDetailViewPagerFragment extends Fragment {
 
-    private Bundle args;
-
-    private long listId;
-    private String listName;
+    private UserList userList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        args = getArguments();
+        Bundle args = getArguments();
 
-        if (args.containsKey(ListDetailFragment.ARG_LIST_ID) && args.containsKey(ListDetailFragment.ARG_LIST_NAME)) {
-            listId = args.getLong(ListDetailFragment.ARG_LIST_ID);
-            listName = args.getString(ListDetailFragment.ARG_LIST_NAME);
+        if (args != null && args.containsKey(ListDetailFragment.ARG_USERLIST)) {
+            userList = (UserList) args.getSerializable(ListDetailFragment.ARG_USERLIST);
         }
     }
 
@@ -42,7 +41,10 @@ public class ListDetailViewPagerFragment extends Fragment {
         ViewPager pager = (ViewPager) view.findViewById(R.id.twitter_list_pager);
         pager.setAdapter(new ListDetailPagerAdapter(getFragmentManager()));
         getActivity().getActionBar();
-        pager.setBackgroundColor(0);
+        pager.setBackgroundColor(0); // TODO wat doet dit ??
+
+        PagerTabStrip tabStrip = (PagerTabStrip) view.findViewById(R.id.twitter_list_pager_title_strip);
+        //tabStrip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
         return view;
     }
@@ -68,10 +70,9 @@ public class ListDetailViewPagerFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
             if (position == 0) {
-                // TODO moeten string resources worden
-                return "Members";
+                return getActivity().getResources().getString(R.string.list_detail_pager_title_members).toUpperCase();
             } else if (position == 1) {
-                return "Others";
+                return getActivity().getResources().getString(R.string.list_detail_pager_title_nonmembers).toUpperCase();
             } else {
                 return "";
             }
@@ -86,12 +87,12 @@ public class ListDetailViewPagerFragment extends Fragment {
         public Fragment getItem(int position) {
             if (position == 0) {
                 if (fragListMembers == null) {
-                    fragListMembers = ListDetailMembersFragment.newInstance(listId, listName);
+                    fragListMembers = ListDetailMembersFragment.newInstance(userList);
                 }
                 return fragListMembers;
             } else if (position == 1) {
                 if (fragListNonMembers == null) {
-                    fragListNonMembers = ListDetailNonMembersFragment.newInstance(listId, listName);
+                    fragListNonMembers = ListDetailNonMembersFragment.newInstance(userList);
                 }
                 return fragListNonMembers;
             } else {

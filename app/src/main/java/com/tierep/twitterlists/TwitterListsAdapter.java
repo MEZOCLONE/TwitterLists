@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class TwitterListsAdapter extends ArrayAdapter<UserList> {
             view = inflater.inflate(R.layout.twitter_list, parent, false);
 
             holder = new ViewHolder();
+            holder.imagePrivacy = (ImageView) view.findViewById(R.id.twitter_list_privacy);
             holder.listName = (TextView) view.findViewById(R.id.twitter_list_name);
             holder.listDescription = (TextView) view.findViewById(R.id.twitter_list_description);
             holder.listMemberCount = (TextView) view.findViewById(R.id.twitter_list_member_count);
@@ -53,6 +55,11 @@ public class TwitterListsAdapter extends ArrayAdapter<UserList> {
         }
 
         UserList userList = this.getItem(position);
+        if (userList.isPublic()) {
+            holder.imagePrivacy.setVisibility(View.GONE);
+        } else {
+            holder.imagePrivacy.setVisibility(View.VISIBLE);
+        }
         holder.listName.setText(userList.getName());
         setListDescription(holder.listDescription, userList.getDescription());
         holder.listMemberCount.setText(getMemberCountString(userList));
@@ -80,6 +87,7 @@ public class TwitterListsAdapter extends ArrayAdapter<UserList> {
     }
 
     private static class ViewHolder {
+        ImageView imagePrivacy;
         TextView listName;
         TextView listDescription;
         TextView listMemberCount;

@@ -2,12 +2,11 @@ package com.tierep.twitterlists.ui;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.tierep.twitterlists.R;
 import com.tierep.twitterlists.Session;
-import com.tierep.twitterlists.TwitterListMembersAdapter;
+import com.tierep.twitterlists.adapters.ListNonMembersAdapter;
+import com.tierep.twitterlists.adapters.UserView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +15,7 @@ import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
+import twitter4j.UserList;
 
 /**
  * A fragment representing a single TwitterList detail screen.
@@ -40,10 +40,10 @@ public class ListDetailNonMembersFragment extends ListDetailFragment {
 
                     do {
                         if (response == null) {
-                            response = twitter.getUserListMembers(listId, -1);
+                            response = twitter.getUserListMembers(userList.getId(), -1);
                             listMembers.addAll(response);
                         } else {
-                            response = twitter.getUserListMembers(listId, response.getNextCursor());
+                            response = twitter.getUserListMembers(userList.getId(), response.getNextCursor());
                             listMembers.addAll(response);
                         }
                     } while (response.hasNext());
@@ -57,9 +57,9 @@ public class ListDetailNonMembersFragment extends ListDetailFragment {
 
                     do {
                         if (response == null) {
-                            response = twitter.getFriendsList(Session.getInstance().getUserId(), -1);
+                            response = twitter.getFriendsList(Session.getInstance().getUserId(), -1, 200);
                         } else {
-                            response = twitter.getFriendsList(Session.getInstance().getUserId(), response.getNextCursor());
+                            response = twitter.getFriendsList(Session.getInstance().getUserId(), response.getNextCursor(), 200);
                         }
 
                         for (User user : response) {
@@ -78,40 +78,9 @@ public class ListDetailNonMembersFragment extends ListDetailFragment {
             @Override
             protected void onPostExecute(List<User> users) {
                 if (users != null) {
-                    setListAdapter(new TwitterListMembersAdapter(getActivity(), users, listId, R.drawable.member_add) {
-                        /**
-                         * Method that can be overriden in a base class to implement a click behaviour when the special
-                         * action on the member is invoked.
-                         *
-                         * @param listId
-                         * @param user
-                         */
-                        @Override
-                        protected void onMemberClick(long listId, final User user) {
-                            super.onMemberClick(listId, user);
-                            new AsyncTask<Long, Void, Void>() {
-                                @Override
-                                protected Void doInBackground(Long... params) {
-                                    long listId = params[0];
-                                    long userId = params[1];
-                                    Twitter twitter = Session.getInstance().getTwitterInstance();
-                                    try {
-                                        twitter.createUserListMember(listId, userId);
-                                    } catch (TwitterException e) {
-                                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                                        Log.e("ERROR", "Error adding member to list", e);
-                                    }
-                                    return null;
-                                }
-
-                                @Override
-                                protected void onPostExecute(Void aVoid) {
-                                    super.onPostExecute(aVoid);
-                                    // TODO imageview action nog updaten.
-                                }
-                            }.execute(listId, user.getId());
-                        }
-                    });
+                    LinkedList<UserView> userViews = UserView.convertFromUsers(users, R.drawable.member_add);
+                    usersInList = userViews;
+                    makeListAdapter(userViews);
                 }
                 // TODO hier nog de case afhandelen dat userLists null is.
                 // TODO ook speciaal geval afhandelen dat de user geen lijsten heeft (count = 0).
@@ -119,10 +88,14 @@ public class ListDetailNonMembersFragment extends ListDetailFragment {
         }.execute();
     }
 
-    public static ListDetailNonMembersFragment newInstance(long listId, String listName) {
+    @Override
+    protected void makeListAdapter(LinkedList<UserView> objects) {
+        setListAdapter(new ListNonMembersAdapter(getActivity(), userList.getId(), objects));
+    }
+
+    public static ListDetailNonMembersFragment newInstance(UserList userList) {
         Bundle arguments = new Bundle();
-        arguments.putLong(ListDetailNonMembersFragment.ARG_LIST_ID,listId);
-        arguments.putString(ListDetailNonMembersFragment.ARG_LIST_NAME, listName);
+        arguments.putSerializable(ListDetailFragment.ARG_USERLIST, userList);
 
         ListDetailNonMembersFragment frag = new ListDetailNonMembersFragment();
         frag.setArguments(arguments);

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/twitter_list_dialog_new_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        android:inputType="textCapSentences"
+        android:hint="@string/twitter_list_dialog_new_name_hint"/>
+
+    <EditText
+        android:id="@+id/twitter_list_dialog_new_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:inputType="textCapSentences"
+        android:hint="@string/twitter_list_dialog_new_description_hint"/>
+
+    <RadioGroup
+        android:id="@+id/twitter_list_dialog_new_radiogroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center">
+
+        <RadioButton
+            android:id="@+id/twitter_list_dialog_new_privacy_public"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/twitter_list_dialog_new_privacy_public"/>
+
+        <RadioButton
+            android:id="@+id/twitter_list_dialog_new_privacy_private"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/twitter_list_dialog_new_privacy_private"/>
+        </RadioGroup>
+
+
+</LinearLayout>

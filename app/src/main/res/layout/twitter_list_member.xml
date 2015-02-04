@@ -10,7 +10,7 @@
 
     <ImageView
         android:id="@+id/twitter_list_member_image"
-        android:src="@drawable/ic_launcher"
+        android:src="@drawable/member_default_avatar"
         android:layout_width="@dimen/twitter_list_member_image_size"
         android:layout_height="@dimen/twitter_list_member_image_size"
         android:layout_marginEnd="4dp"
@@ -22,23 +22,16 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/twitter_list_member_image"
         android:layout_toRightOf="@id/twitter_list_member_image"
-        android:textStyle="bold"
-        android:text="Marques Brownlee"/>
-
-    <TextView
-        android:id="@+id/twitter_list_member_twittername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/twitter_list_member_name"
-        android:layout_toRightOf="@id/twitter_list_member_name"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:text="MKBHD"/>
+        android:layout_toStartOf="@+id/twitter_list_member_action"
+        android:layout_toLeftOf="@+id/twitter_list_member_action"
+        android:text="Marques Brownlee MKBHDLONGTWITTER"/>
 
     <ImageView
         android:id="@+id/twitter_list_member_action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"

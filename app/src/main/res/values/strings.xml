@@ -9,5 +9,23 @@
     <string name="login_text">Sign in with Twitter</string>
     <string name="member">member</string>
     <string name="members">members</string>
+    <string name="menu_twitter_list_new">New</string>
+    <string name="twitter_list_dialog_new_name_hint">Name</string>
+    <string name="twitter_list_dialog_new_description_hint">Description</string>
+    <string name="twitter_list_dialog_manage_title_create">Create new Twitter list</string>
+    <string name="twitter_list_dialog_manage_title_edit">Edit Twitter list</string>
+    <string name="twitter_list_dialog_manage_pos_btn_create">Create list</string>
+    <string name="twitter_list_dialog_manage_pos_btn_edit">Edit list</string>
+    <string name="twitter_list_dialog_manage_neg_btn">Cancel</string>
+    <string name="twitter_list_dialog_new_privacy_public">Public</string>
+    <string name="twitter_list_dialog_new_privacy_private">Private</string>
+    <string name="menu_twitter_list_delete">Delete</string>
+    <string name="menu_twitter_list_edit">Edit</string>
+    <string name="twitter_list_dialog_delete_msg">Are you sure you want to delete this Twitter list?</string>
+    <string name="twitter_list_dialog_delete_pos_btn">Delete</string>
+    <string name="twitter_list_dialog_delete_neg_btn">Cancel</string>
+    <string name="menu_twitter_list_log_out">Log Out</string>
+    <string name="list_detail_pager_title_members">Members</string>
+    <string name="list_detail_pager_title_nonmembers">Other people you follow</string>
 
 </resources>

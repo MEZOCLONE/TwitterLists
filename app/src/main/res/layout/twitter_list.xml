@@ -7,12 +7,20 @@
     android:paddingBottom="8dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
+    
+    <ImageView
+        android:id="@+id/twitter_list_privacy"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/list_private"/>
 
     <TextView
         android:id="@+id/twitter_list_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:layout_toEndOf="@id/twitter_list_privacy"
+        android:layout_toRightOf="@id/twitter_list_privacy"
         android:text="Friends"/>
 
     <TextView

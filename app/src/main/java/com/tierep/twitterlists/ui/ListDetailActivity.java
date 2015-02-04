@@ -2,12 +2,22 @@ package com.tierep.twitterlists.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.tierep.twitterlists.R;
+import com.tierep.twitterlists.Session;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.UserList;
 
 
 /**
@@ -19,18 +29,20 @@ import com.tierep.twitterlists.R;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link ListDetailMembersFragment}.
  */
-public class ListDetailActivity extends Activity {
+public class ListDetailActivity extends Activity implements DeleteListDialogFragment.DeleteListDialogListener, ManageListDialogFragment.ManageListDialogListener {
+
+    UserList userList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_twitterlist_detail);
 
-        String listName = getIntent().getStringExtra(ListDetailFragment.ARG_LIST_NAME);
+        userList = (UserList) getIntent().getSerializableExtra(ListDetailFragment.ARG_USERLIST);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(listName);
+        actionBar.setTitle(userList.getName());
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -45,10 +57,8 @@ public class ListDetailActivity extends Activity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putLong(ListDetailFragment.ARG_LIST_ID,
-                    getIntent().getLongExtra(ListDetailFragment.ARG_LIST_ID, 0));
-            arguments.putString(ListDetailFragment.ARG_LIST_NAME,
-                    getIntent().getStringExtra(ListDetailFragment.ARG_LIST_NAME));
+            arguments.putSerializable(ListDetailFragment.ARG_USERLIST,
+                    getIntent().getSerializableExtra(ListDetailFragment.ARG_USERLIST));
             ListDetailViewPagerFragment fragment = new ListDetailViewPagerFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -58,19 +68,109 @@ public class ListDetailActivity extends Activity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_list_detail, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpTo(this, new Intent(this, ListActivity.class));
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // This ID represents the Home or Up button. In the case of this
+                // activity, the Up button is shown. Use NavUtils to allow users
+                // to navigate up one level in the application structure. For
+                // more details, see the Navigation pattern on Android Design:
+                //
+                // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+                //
+                NavUtils.navigateUpTo(this, new Intent(this, ListActivity.class));
+                return true;
+            case R.id.twitter_list_edit:
+                editList();
+                return true;
+            case R.id.twitter_list_delete:
+                deleteList();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void editList() {
+        DialogFragment dialog = ManageListDialogFragment.newInstance(userList.getName(), userList.getDescription(), userList.isPublic());
+        dialog.show(getFragmentManager(), "dialog_edit_twitter_list");
+    }
+
+    private void deleteList() {
+        DialogFragment dialog = new DeleteListDialogFragment();
+        dialog.show(getFragmentManager(), "dialog_delete_twitter_list");
+    }
+
+    @Override
+    public void onDeleteListDialogPositiveClick(DialogFragment dialog) {
+        new AsyncTask<Long, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Long... params) {
+                long listId = params[0];
+                Twitter twitter = Session.getInstance().getTwitterInstance();
+                try {
+                    twitter.destroyUserList(listId);
+                    return true;
+                } catch (TwitterException e) {
+                    Log.e("ERROR", "Error during deleting of list", e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                super.onPostExecute(result);
+                if (result) {
+                    NavUtils.navigateUpTo(ListDetailActivity.this, new Intent(ListDetailActivity.this, ListActivity.class));
+                } else {
+                    Toast.makeText(ListDetailActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute(userList.getId());
+    }
+
+    @Override
+    public void onDeleteListDialogNegativeClick(DialogFragment dialog) {
+        // Do nothing
+    }
+
+    @Override
+    public void onManageListDialogPositiveClick(final ManageListDialogFragment.ManageListModel model) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                Twitter twitter = Session.getInstance().getTwitterInstance();
+                try {
+                    // TODO Het UserList object in fragment moet nu ook ge-upate worden, want anders krijgen we bug als we bijv. opnieuw een edit uitvoeren.
+                    twitter.updateUserList(userList.getId(), model.name, model.isPublicList, model.description);
+                    return true;
+                } catch (TwitterException e) {
+                    Log.e("ERROR", "Error during updating list.", e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                super.onPostExecute(result);
+                if (result) {
+                    getActionBar().setTitle(model.name);
+                } else {
+                    // TODO internationlize
+                    Toast.makeText(ListDetailActivity.this, "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void onManageListDialogNegativeClick(DialogFragment dialog) {
+        // Do nothing
     }
 }

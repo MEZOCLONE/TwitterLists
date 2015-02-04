@@ -5,3 +5,4 @@
 .DS_Store
 /build
 twitter4j.properties
+com_crashlytics_export_strings.xml

@@ -1,7 +1,13 @@
 package com.tierep.twitterlists.ui;
 
-import android.os.Bundle;
 import android.app.ListFragment;
+import android.os.Bundle;
+
+import com.tierep.twitterlists.adapters.UserView;
+
+import java.util.LinkedList;
+
+import twitter4j.UserList;
 
 /**
  * An abstract class that serves as an abstraction for fragments that represents the details of a
@@ -12,17 +18,23 @@ import android.app.ListFragment;
  */
 public abstract class ListDetailFragment extends ListFragment {
     /**
-     * The fragment argument representing the item ID that this fragment
+     * The fragment argument representing the UserList that this fragment
      * represents.
      */
-    public static final String ARG_LIST_ID = "item_id";
-    public static final String ARG_LIST_NAME = "list_name";
+    public static final String ARG_USERLIST = "userList";
+
+    /**
+     * The serialization (saved instance state) Bundle key representing the
+     * members in the current list.
+     */
+    private static final String STATE_USERSINLIST = "usersInList";
 
     /**
      * The list this fragment is presenting.
      */
-    protected long listId;
-    protected String listName;
+    protected UserList userList;
+
+    protected LinkedList<UserView> usersInList;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,14 +48,29 @@ public abstract class ListDetailFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
+        if (args != null && args.containsKey(ARG_USERLIST)) {
+            userList = (UserList) args.getSerializable(ARG_USERLIST);
 
-        if (args.containsKey(ARG_LIST_ID) && args.containsKey(ARG_LIST_NAME)) {
-            listId = args.getLong(ARG_LIST_ID);
-            listName = args.getString(ARG_LIST_NAME);
-
-            this.initializeList();
+            if (savedInstanceState != null) {
+                this.usersInList = (LinkedList<UserView>) savedInstanceState.getSerializable(STATE_USERSINLIST);
+                makeListAdapter(usersInList);
+            } else {
+                this.initializeList();
+            }
         }
     }
 
+    /**
+     * Fetches the list from the remote server, sets the usersInList member variable
+     * and makes the list adapter.
+     */
     protected abstract void initializeList();
+
+    protected abstract void makeListAdapter(LinkedList<UserView> objects);
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_USERSINLIST, usersInList);
+    }
 }
