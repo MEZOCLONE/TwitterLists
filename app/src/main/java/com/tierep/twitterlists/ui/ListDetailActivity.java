@@ -1,12 +1,11 @@
 package com.tierep.twitterlists.ui;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,20 +28,21 @@ import twitter4j.UserList;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link ListDetailMembersFragment}.
  */
-public class ListDetailActivity extends Activity implements DeleteListDialogFragment.DeleteListDialogListener, ManageListDialogFragment.ManageListDialogListener {
+public class ListDetailActivity extends BaseActivity implements DeleteListDialogFragment.DeleteListDialogListener, ManageListDialogFragment.ManageListDialogListener {
 
     UserList userList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_twitterlist_detail);
 
         userList = (UserList) getIntent().getSerializableExtra(ListDetailFragment.ARG_USERLIST);
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(userList.getName());
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(userList.getName());
+        }
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -65,6 +65,11 @@ public class ListDetailActivity extends Activity implements DeleteListDialogFrag
                     .add(R.id.twitterlist_detail_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_twitterlist_detail;
     }
 
     @Override

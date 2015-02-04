@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,11 +39,6 @@ public class ListDetailViewPagerFragment extends Fragment {
 
         ViewPager pager = (ViewPager) view.findViewById(R.id.twitter_list_pager);
         pager.setAdapter(new ListDetailPagerAdapter(getFragmentManager()));
-        getActivity().getActionBar();
-        pager.setBackgroundColor(0); // TODO wat doet dit ??
-
-        PagerTabStrip tabStrip = (PagerTabStrip) view.findViewById(R.id.twitter_list_pager_title_strip);
-        //tabStrip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
         return view;
     }

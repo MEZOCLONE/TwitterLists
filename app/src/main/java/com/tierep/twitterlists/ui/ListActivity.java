@@ -1,6 +1,5 @@
 package com.tierep.twitterlists.ui;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.ListFragment;
 import android.content.Intent;
@@ -36,7 +35,7 @@ import twitter4j.UserList;
  * {@link ListsFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class ListActivity extends Activity
+public class ListActivity extends BaseActivity
         implements ListsFragment.Callbacks, ManageListDialogFragment.ManageListDialogListener {
 
     /**
@@ -48,7 +47,6 @@ public class ListActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_twitterlist_list);
 
         if (findViewById(R.id.twitterlist_detail_container) != null) {
             // The detail container view will be present only in the
@@ -63,6 +61,11 @@ public class ListActivity extends Activity
                     .findFragmentById(R.id.twitterlist_list))
                     .setActivateOnItemClick(true);
         }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_twitterlist_list;
     }
 
     /**

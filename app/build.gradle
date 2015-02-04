@@ -17,7 +17,7 @@ repositories {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.0"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.tierep.twitterlists"
@@ -48,6 +48,7 @@ dependencies {
     compile('com.twitter.sdk.android:twitter:1.1.1@aar') {
         transitive = true;
     }
+    compile 'com.android.support:appcompat-v7:21.+'
     compile 'org.twitter4j:twitter4j-core:4.0.2'
     compile 'org.twitter4j:twitter4j-async:4.0.2'
     compile 'com.android.support:support-v4:21.0.3'

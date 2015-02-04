@@ -6,3 +6,4 @@
 /build
 twitter4j.properties
 com_crashlytics_export_strings.xml
+crashlytics-build.properties
