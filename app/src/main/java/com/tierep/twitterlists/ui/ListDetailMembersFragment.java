@@ -7,12 +7,12 @@ import com.tierep.twitterlists.R;
 import com.tierep.twitterlists.Session;
 import com.tierep.twitterlists.adapters.ListMembersAdapter;
 import com.tierep.twitterlists.adapters.UserView;
+import com.tierep.twitterlists.twitter4jcache.TwitterCache;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import twitter4j.PagableResponseList;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
 import twitter4j.UserList;
@@ -31,7 +31,7 @@ public class ListDetailMembersFragment extends ListDetailFragment {
         new AsyncTask<Void, Void, List<User>>() {
             @Override
             protected List<User> doInBackground(Void... params) {
-                Twitter twitter = Session.getInstance().getTwitterInstance();
+                TwitterCache twitter = Session.getInstance().getTwitterCacheInstance();
                 List<User> result = new LinkedList<User>();
                 try {
                     PagableResponseList<User> response = null;

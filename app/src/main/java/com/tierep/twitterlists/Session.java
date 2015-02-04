@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.tierep.twitterlists.twitter4jcache.TwitterCache;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -34,6 +36,7 @@ public class Session {
     private String accessTokenSecret = "";
 
     private Twitter twitterInstance = null;
+    private TwitterCache twitterCacheInstance = null;
     private AsyncTwitter asyncTwitterInstance = null;
 
     private long userId;
@@ -90,6 +93,13 @@ public class Session {
             twitterInstance = tf.getInstance();
         }
         return twitterInstance;
+    }
+
+    public TwitterCache getTwitterCacheInstance() {
+        if (twitterCacheInstance == null) {
+            twitterCacheInstance = new TwitterCache(getTwitterInstance());
+        }
+        return twitterCacheInstance;
     }
 
     public AsyncTwitter getAsyncTwitterInstance() {
