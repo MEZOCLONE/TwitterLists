@@ -35,7 +35,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/member_delete"/>
+        android:src="@drawable/member_delete_touch"/>
+
 
     <TextView
         android:id="@+id/twitter_list_member_description"

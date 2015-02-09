@@ -54,7 +54,7 @@ public class ListDetailMembersFragment extends ListDetailFragment {
             @Override
             protected void onPostExecute(PagableResponseList<User> users) {
                 if (users != null) {
-                    makeListAdapter(users, new LinkedList<>(Collections.nCopies(users.size(), R.drawable.member_add_touch)));
+                    makeListAdapter(users, new LinkedList<>(Collections.nCopies(users.size(), R.drawable.member_delete_touch)));
                 }
                 // TODO hier nog de case afhandelen dat userLists null is.
                 // TODO ook speciaal geval afhandelen dat de user geen lijsten heeft (count = 0).
