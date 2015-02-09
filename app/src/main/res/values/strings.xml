@@ -27,5 +27,6 @@
     <string name="menu_twitter_list_log_out">Log Out</string>
     <string name="list_detail_pager_title_members">Members</string>
     <string name="list_detail_pager_title_nonmembers">Other people you follow</string>
+    <string name="pagination_loading_more_people">Loading more people...</string>
 
 </resources>

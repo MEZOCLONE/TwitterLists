@@ -3,10 +3,12 @@ package com.tierep.twitterlists.ui;
 import android.app.ListFragment;
 import android.os.Bundle;
 
-import com.tierep.twitterlists.adapters.UserView;
+import com.tierep.twitterlists.adapters.UsersWithActionAdapter;
 
 import java.util.LinkedList;
 
+import twitter4j.PagableResponseList;
+import twitter4j.User;
 import twitter4j.UserList;
 
 /**
@@ -24,17 +26,16 @@ public abstract class ListDetailFragment extends ListFragment {
     public static final String ARG_USERLIST = "userList";
 
     /**
-     * The serialization (saved instance state) Bundle key representing the
+     * The serialization (saved instance state) Bundle keys representing the
      * members in the current list.
      */
     private static final String STATE_USERSINLIST = "usersInList";
+    private static final String STATE_USERSINLISTACTIONS = "usersInListActions";
 
     /**
      * The list this fragment is presenting.
      */
     protected UserList userList;
-
-    protected LinkedList<UserView> usersInList;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,8 +53,9 @@ public abstract class ListDetailFragment extends ListFragment {
             userList = (UserList) args.getSerializable(ARG_USERLIST);
 
             if (savedInstanceState != null) {
-                this.usersInList = (LinkedList<UserView>) savedInstanceState.getSerializable(STATE_USERSINLIST);
-                makeListAdapter(usersInList);
+                PagableResponseList<User> users = (PagableResponseList<User>) savedInstanceState.getSerializable(STATE_USERSINLIST);
+                LinkedList<Integer> actions = (LinkedList<Integer>) savedInstanceState.getSerializable(STATE_USERSINLISTACTIONS);
+                makeListAdapter(users, actions);
             } else {
                 this.initializeList();
             }
@@ -66,11 +68,15 @@ public abstract class ListDetailFragment extends ListFragment {
      */
     protected abstract void initializeList();
 
-    protected abstract void makeListAdapter(LinkedList<UserView> objects);
+    protected abstract void makeListAdapter(PagableResponseList<User> users, LinkedList<Integer> actions);
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(STATE_USERSINLIST, usersInList);
+        // TODO moet userList niet opgeslaan worden ?
+
+        UsersWithActionAdapter adapter = (UsersWithActionAdapter) getListAdapter();
+        outState.putSerializable(STATE_USERSINLIST, adapter.getUsers());
+        outState.putSerializable(STATE_USERSINLISTACTIONS, adapter.getActions());
     }
 }

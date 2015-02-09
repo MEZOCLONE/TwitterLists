@@ -6,11 +6,10 @@ import android.os.Bundle;
 import com.tierep.twitterlists.R;
 import com.tierep.twitterlists.Session;
 import com.tierep.twitterlists.adapters.ListMembersAdapter;
-import com.tierep.twitterlists.adapters.UserView;
 import com.tierep.twitterlists.twitter4jcache.TwitterCache;
 
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 import twitter4j.PagableResponseList;
 import twitter4j.TwitterException;
@@ -28,24 +27,24 @@ public class ListDetailMembersFragment extends ListDetailFragment {
     protected void initializeList() {
         // TODO ideaal zou dit zo gebeuren dat de paging gebeurt wanneer er naar beneden gescrolt wordt.
         // TODO dit aantal dat telkens moet opgehaald worden hangt af van tablet/gsm grootte
-        new AsyncTask<Void, Void, List<User>>() {
+        new AsyncTask<Void, Void, PagableResponseList<User>>() {
             @Override
-            protected List<User> doInBackground(Void... params) {
+            protected PagableResponseList<User> doInBackground(Void... params) {
                 TwitterCache twitter = Session.getInstance().getTwitterCacheInstance();
-                List<User> result = new LinkedList<User>();
                 try {
                     PagableResponseList<User> response = null;
                     do {
                         if (response == null) {
                             response = twitter.getUserListMembers(userList.getId(), -1);
-                            result.addAll(response);
                         } else {
-                            response = twitter.getUserListMembers(userList.getId(), response.getNextCursor());
-                            result.addAll(response);
+
+                            PagableResponseList<User> nextPage = twitter.getUserListMembers(userList.getId(), response.getNextCursor());
+                            nextPage.addAll(0, response);
+                            response = nextPage;
                         }
                     } while (response.hasNext());
 
-                    return result;
+                    return response;
                 } catch (TwitterException e) {
                     e.printStackTrace();
                     return null;
@@ -53,11 +52,9 @@ public class ListDetailMembersFragment extends ListDetailFragment {
             }
 
             @Override
-            protected void onPostExecute(List<User> users) {
+            protected void onPostExecute(PagableResponseList<User> users) {
                 if (users != null) {
-                    LinkedList<UserView> userViews = UserView.convertFromUsers(users, R.drawable.member_delete);
-                    usersInList = userViews;
-                    makeListAdapter(userViews);
+                    makeListAdapter(users, new LinkedList<>(Collections.nCopies(users.size(), R.drawable.member_add_touch)));
                 }
                 // TODO hier nog de case afhandelen dat userLists null is.
                 // TODO ook speciaal geval afhandelen dat de user geen lijsten heeft (count = 0).
@@ -66,9 +63,8 @@ public class ListDetailMembersFragment extends ListDetailFragment {
     }
 
     @Override
-    protected void makeListAdapter(LinkedList<UserView> objects) {
-        ListMembersAdapter adapter = new ListMembersAdapter(getActivity(), userList.getId(), objects);
-        setListAdapter(adapter);
+    protected void makeListAdapter(PagableResponseList<User> users, LinkedList<Integer> actions) {
+        setListAdapter(new ListMembersAdapter(getActivity(), userList.getId(), users, actions));
     }
 
     public static ListDetailMembersFragment newInstance(UserList userList) {

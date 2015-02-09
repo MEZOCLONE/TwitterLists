@@ -7,24 +7,28 @@ import android.widget.Toast;
 
 import com.tierep.twitterlists.Session;
 
-import java.util.List;
+import java.util.LinkedList;
 
+import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.User;
 
 /**
  * Created by pieter on 04/02/15.
  */
 public class ListMembersAdapter extends UsersWithActionAdapter {
+
     /**
      * Constructor
      *
      * @param context The current context.
      * @param listId  The Id of the twitter list that this adapter represents.
-     * @param objects The objects to represent in the ListView.
+     * @param users   The objects to represent in the ListView.
+     * @param actions
      */
-    public ListMembersAdapter(Context context, long listId, List<UserView> objects) {
-        super(context, listId, objects);
+    public ListMembersAdapter(Context context, long listId, PagableResponseList<User> users, LinkedList<Integer> actions) {
+        super(context, listId, users, actions);
     }
 
     /**
@@ -33,11 +37,11 @@ public class ListMembersAdapter extends UsersWithActionAdapter {
      *
      * @param position
      * @param listId
-     * @param userView
+     * @param user
      */
     @Override
-    protected void onMemberClick(int position, long listId, final UserView userView) {
-        super.onMemberClick(position, listId, userView);
+    protected void onMemberClick(final int position, long listId, final User user, final int actionDrawableId) {
+        super.onMemberClick(position, listId, user, actionDrawableId);
 
         new AsyncTask<Long, Void, Boolean>() {
             @Override
@@ -58,13 +62,14 @@ public class ListMembersAdapter extends UsersWithActionAdapter {
             protected void onPostExecute(Boolean result) {
                 super.onPostExecute(result);
                 if (result) {
-                    remove(userView);
+                    users.remove(user);
+                    actions.remove(position);
                     notifyDataSetChanged();
                 } else {
                     // TODO internationalize string resource
-                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }
             }
-        }.execute(listId, userView.user.getId());
+        }.execute(listId, user.getId());
     }
 }

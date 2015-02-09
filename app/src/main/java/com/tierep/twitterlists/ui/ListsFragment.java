@@ -45,7 +45,7 @@ public class ListsFragment extends ListFragment {
      * The serialization (saved instance state) Bundle key representing the
      * lists of the current user.
      */
-    private static final String STATE_USERLISTS = "userlists";
+    private static final String STATE_USERLISTS = "ListsFragment.userLists";
 
     private LinkedList<UserList> userLists;
 

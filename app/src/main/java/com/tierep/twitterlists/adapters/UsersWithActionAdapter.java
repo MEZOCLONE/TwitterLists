@@ -7,15 +7,16 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 import com.tierep.twitterlists.R;
 
-import java.util.List;
+import java.util.LinkedList;
 
+import twitter4j.PagableResponseList;
 import twitter4j.User;
 
 /**
@@ -23,25 +24,64 @@ import twitter4j.User;
  * <p/>
  * Created by pieter on 31/01/15.
  */
-public class UsersWithActionAdapter extends ArrayAdapter<UserView> {
+public class UsersWithActionAdapter extends BaseAdapter {
 
+    protected Context context;
     long listId;
+    protected PagableResponseList<User> users;
+    protected LinkedList<Integer> actions;
 
     /**
      * Constructor
      *
      * @param context The current context.
-     * @param objects The objects to represent in the ListView.
      * @param listId  The Id of the twitter list that this adapter represents.
+     * @param users The objects to represent in the ListView.
      */
-    public UsersWithActionAdapter(Context context, long listId, List<UserView> objects) {
-        super(context, 0, objects);
+    public UsersWithActionAdapter(Context context, long listId, PagableResponseList<User> users, LinkedList<Integer> actions) {
+        super();
+        this.context = context;
         this.listId = listId;
+        this.users = users;
+        this.actions = actions;
     }
 
     @Override
     public boolean isEnabled(int position) {
         return false;
+    }
+
+    /**
+     * How many items are in the data set represented by this Adapter.
+     *
+     * @return Count of items.
+     */
+    @Override
+    public int getCount() {
+        return users.size();
+    }
+
+    /**
+     * Get the data item associated with the specified position in the data set.
+     *
+     * @param position Position of the item whose data we want within the adapter's
+     *                 data set.
+     * @return The data at the specified position.
+     */
+    @Override
+    public Object getItem(int position) {
+        return users.get(position);
+    }
+
+    /**
+     * Get the row id associated with the specified position in the list.
+     *
+     * @param position The position of the item within the adapter's data set whose row id we want.
+     * @return The id of the item at the specified position.
+     */
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     /**
@@ -57,7 +97,7 @@ public class UsersWithActionAdapter extends ArrayAdapter<UserView> {
         ViewHolder holder;
 
         if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.twitter_list_member, parent, false);
 
             holder = new ViewHolder();
@@ -70,10 +110,10 @@ public class UsersWithActionAdapter extends ArrayAdapter<UserView> {
             holder = (ViewHolder) view.getTag();
         }
 
-        final UserView userView = this.getItem(position);
-        final User user = userView.user;
-        final int actionDrawableId = userView.actionDrawableId;
+        final User user = this.users.get(position);
+        final int actionDrawableId = this.actions.get(position);
 
+        holder.image.setVisibility(View.VISIBLE);
         Ion.with(holder.image)
                 .placeholder(R.drawable.member_default_avatar)
                 .load(determineProfileImageUrl(user));
@@ -82,10 +122,11 @@ public class UsersWithActionAdapter extends ArrayAdapter<UserView> {
         holder.action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onMemberClick(position, listId, userView);
+                onMemberClick(position, listId, user, actionDrawableId);
             }
         });
         holder.action.setImageResource(actionDrawableId);
+        holder.action.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -104,7 +145,7 @@ public class UsersWithActionAdapter extends ArrayAdapter<UserView> {
     private String determineProfileImageUrl(final User user) {
         String result;
 
-        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        DisplayMetrics metrics = this.context.getResources().getDisplayMetrics();
         switch (metrics.densityDpi) {
             case DisplayMetrics.DENSITY_LOW:
                 result = user.getMiniProfileImageURLHttps();
@@ -127,13 +168,23 @@ public class UsersWithActionAdapter extends ArrayAdapter<UserView> {
      * action on the member is invoked.
      *
      * @param listId
-     * @param userView
+     * @param user
+     * @param actionDrawableId
      */
-    protected void onMemberClick(int position, long listId, final UserView userView) {
+    protected void onMemberClick(int position, long listId, final User user, final int actionDrawableId) {
 
     }
 
-    private static class ViewHolder {
+    public PagableResponseList<User> getUsers() {
+        return users;
+    }
+
+    public LinkedList<Integer> getActions() {
+        return actions;
+    }
+
+
+    protected static class ViewHolder {
         ImageView image;
         TextView name;
         TextView description;
