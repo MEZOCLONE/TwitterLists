@@ -51,15 +51,11 @@ public class ListDetailNonMembersFragment extends ListDetailFragment {
                     e.printStackTrace();
                 }
 
-                List<User> listNonMembers = new LinkedList<User>();
                 try {
                     PagableResponseList<User> response = twitter.getFriendsList(Session.getInstance().getUserId(), -1);
 
-
-                        for (User user : response) {
-                            if (!listMembers.contains(user)) {
-                                listNonMembers.add(user);
-                            }
+                        for (User user : listMembers) {
+                            response.remove(user);
                         }
                     return response;
                 } catch (TwitterException e) {

@@ -37,7 +37,6 @@ public class ListDetailMembersFragment extends ListDetailFragment {
                         if (response == null) {
                             response = twitter.getUserListMembers(userList.getId(), -1);
                         } else {
-
                             PagableResponseList<User> nextPage = twitter.getUserListMembers(userList.getId(), response.getNextCursor());
                             nextPage.addAll(0, response);
                             response = nextPage;
