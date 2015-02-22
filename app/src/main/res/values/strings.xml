@@ -31,5 +31,6 @@
     <string name="activity_login_title">Twitter List Manager</string>
     <string name="activity_login_subtitle">Manage your Twitter lists easily.</string>
     <string name="text_loading_3dots">Loading…</string>
+    <string name="text_something_went_wrong">Something went wrong.</string>
 
 </resources>

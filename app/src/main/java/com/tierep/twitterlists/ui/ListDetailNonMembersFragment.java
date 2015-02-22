@@ -28,13 +28,11 @@ import twitter4j.UserList;
 public class ListDetailNonMembersFragment extends ListDetailFragment {
     @Override
     protected void initializeList() {
-        // TODO ideaal zou dit zo gebeuren dat de paging gebeurt wanneer er naar beneden gescrolt wordt.
-        // TODO dit aantal dat telkens moet opgehaald worden hangt af van tablet/gsm grootte
         new AsyncTask<Void, Void, PagableResponseList<User>>() {
             @Override
             protected PagableResponseList<User> doInBackground(Void... params) {
                 TwitterCache twitter = Session.getInstance().getTwitterCacheInstance();
-                List<User> listMembers = new LinkedList<User>();
+                List<User> listMembers = new LinkedList<>();
                 try {
                     PagableResponseList<User> response = null;
 
@@ -51,6 +49,7 @@ public class ListDetailNonMembersFragment extends ListDetailFragment {
                     e.printStackTrace();
                 }
 
+                // The friend list is paged, the next response is fetched in the adapter.
                 try {
                     PagableResponseList<User> response = twitter.getFriendsList(Session.getInstance().getUserId(), -1);
 

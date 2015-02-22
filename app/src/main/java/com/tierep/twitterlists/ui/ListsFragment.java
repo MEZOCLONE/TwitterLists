@@ -127,8 +127,7 @@ public class ListsFragment extends ListFragment {
                         ListsFragment.this.userLists = result;
                         setListAdapter(new TwitterListsAdapter(getActivity(), result));
                     } else {
-                        // TODO internationalize
-                        Toast.makeText(getActivity(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), getString(R.string.text_something_went_wrong), Toast.LENGTH_LONG).show();
                     }
                     // TODO in case of error permanemente melding geven (loading.. balk weghalen !!)
                     // TODO ook speciaal geval afhandelen dat de user geen lijsten heeft (count = 0).

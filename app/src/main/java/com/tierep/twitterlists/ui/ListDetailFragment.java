@@ -73,7 +73,7 @@ public abstract class ListDetailFragment extends ListFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // TODO moet userList niet opgeslaan worden ?
+        // State of userList is in arguments-bundle, which is automatically saved on a configuration change.
 
         UsersWithActionAdapter adapter = (UsersWithActionAdapter) getListAdapter();
         outState.putSerializable(STATE_USERSINLIST, adapter.getUsers());

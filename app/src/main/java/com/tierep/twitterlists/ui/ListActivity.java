@@ -151,8 +151,7 @@ public class ListActivity extends BaseActivity
                     adapter.add(result);
                     adapter.notifyDataSetChanged();
                 } else {
-                    // TODO internationalize
-                    Toast.makeText(ListActivity.this, "Something went wrong.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ListActivity.this, getString(R.string.text_something_went_wrong), Toast.LENGTH_LONG).show();
                 }
             }
         }.execute();

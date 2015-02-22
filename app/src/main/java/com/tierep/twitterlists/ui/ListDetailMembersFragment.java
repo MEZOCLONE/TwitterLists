@@ -38,13 +38,12 @@ public class ListDetailMembersFragment extends ListDetailFragment {
 
     @Override
     protected void initializeList() {
-        // TODO ideaal zou dit zo gebeuren dat de paging gebeurt wanneer er naar beneden gescrolt wordt.
-        // TODO dit aantal dat telkens moet opgehaald worden hangt af van tablet/gsm grootte
         new AsyncTask<Void, Void, PagableResponseList<User>>() {
             @Override
             protected PagableResponseList<User> doInBackground(Void... params) {
                 TwitterCache twitter = Session.getInstance().getTwitterCacheInstance();
                 try {
+                    // TODO library laat ons nog niet toe om meer users te gelijk binnen te halen
                     PagableResponseList<User> response = null;
                     do {
                         if (response == null) {

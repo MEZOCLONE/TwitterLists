@@ -167,8 +167,7 @@ public class ListDetailActivity extends BaseActivity implements DeleteListDialog
                 if (result) {
                     getSupportActionBar().setTitle(model.name);
                 } else {
-                    // TODO internationlize
-                    Toast.makeText(ListDetailActivity.this, "Something went wrong.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ListDetailActivity.this, getString(R.string.text_something_went_wrong), Toast.LENGTH_LONG).show();
                 }
             }
         }.execute();
