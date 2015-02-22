@@ -88,4 +88,14 @@ public class ListDetailMembersFragment extends ListDetailFragment {
 
         return frag;
     }
+
+    /**
+     * Called when the fragment is no longer in use.  This is called
+     * after {@link #onStop()} and before {@link #onDetach()}.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Session.getInstance().getTwitterCacheInstance().invalidateUserListMembers();
+    }
 }

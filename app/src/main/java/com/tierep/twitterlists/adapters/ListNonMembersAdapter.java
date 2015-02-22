@@ -64,6 +64,7 @@ public class ListNonMembersAdapter extends UsersWithActionPagingAdapter {
                             actions.add(position, R.drawable.member_added_touch);
                             notifyDataSetChanged();
                         } else {
+                            // TODO internationalize string resource
                             Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     }

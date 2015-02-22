@@ -1,5 +1,7 @@
 package com.tierep.twitterlists.twitter4jcache;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 import twitter4j.PagableResponseList;
@@ -49,14 +51,17 @@ public class TwitterCache {
         if (hashMapCursor != null) {
             PagableResponseList<User> cachedValue = hashMapCursor.get(key2);
             if (cachedValue != null) {
+                Log.d("CACHE", "Cache hit");
                 return cachedValue;
             } else {
                 PagableResponseList<User> result = fetcher.fetch();
+                Log.d("CACHE", "Cache miss");
                 hashMapCursor.put(key2, result);
                 return result;
             }
         } else {
             PagableResponseList<User> result = fetcher.fetch();
+            Log.d("CACHE", "Cache miss");
             HashMap<Long, PagableResponseList<User>> cacheForSpecificList = new HashMap<>();
             cacheForSpecificList.put(key2, result);
             cache.put(key1, cacheForSpecificList);
@@ -71,8 +76,18 @@ public class TwitterCache {
     /**
      * Empty the caches.
      */
-    public void invalidate() {
+    public void invalidateAll() {
         cacheUserListMembers = new HashMap<>();
+        cacheFriendsListMember = new HashMap<>();
+    }
+
+    // TODO dit zou geinvalideerd kunnen worden per ID
+    public void invalidateUserListMembers() {
+        cacheUserListMembers = new HashMap<>();
+        Log.d("CACHE", "Clear cache UserListMembers");
+    }
+
+    public void invalidateFriendListMembers() {
         cacheFriendsListMember = new HashMap<>();
     }
 }
