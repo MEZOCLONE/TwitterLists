@@ -165,7 +165,7 @@ public class ListDetailActivity extends BaseActivity implements DeleteListDialog
             protected void onPostExecute(Boolean result) {
                 super.onPostExecute(result);
                 if (result) {
-                    getActionBar().setTitle(model.name);
+                    getSupportActionBar().setTitle(model.name);
                 } else {
                     // TODO internationlize
                     Toast.makeText(ListDetailActivity.this, "Something went wrong.", Toast.LENGTH_LONG).show();
