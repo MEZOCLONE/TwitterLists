@@ -28,5 +28,6 @@
     <string name="list_detail_pager_title_members">Members</string>
     <string name="list_detail_pager_title_nonmembers">Other people you follow</string>
     <string name="pagination_loading_more_people">Loading more people...</string>
+    <string name="text_no_members_in_the_list">No members in the list.</string>
 
 </resources>

@@ -38,5 +38,4 @@
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </FrameLayout>
-
 </FrameLayout>

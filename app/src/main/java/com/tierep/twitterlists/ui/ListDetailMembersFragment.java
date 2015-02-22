@@ -2,6 +2,7 @@ package com.tierep.twitterlists.ui;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
 
 import com.tierep.twitterlists.R;
 import com.tierep.twitterlists.Session;
@@ -23,6 +24,18 @@ import twitter4j.UserList;
  * on handsets.
  */
 public class ListDetailMembersFragment extends ListDetailFragment {
+    /**
+     * Attach to list view once the view hierarchy has been created.
+     *
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setEmptyText(getActivity().getResources().getString(R.string.text_no_members_in_the_list));
+    }
+
     @Override
     protected void initializeList() {
         // TODO ideaal zou dit zo gebeuren dat de paging gebeurt wanneer er naar beneden gescrolt wordt.
