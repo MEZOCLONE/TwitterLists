@@ -19,7 +19,7 @@
         android:fontFamily="sans-serif-light"
         android:textStyle="italic"
         android:textColor="#FFFFFF"
-        android:text="Twitter List Manager"/>
+        android:text="@string/activity_login_title"/>
 
     <RelativeLayout
         android:layout_weight="1"
@@ -43,7 +43,7 @@
             android:gravity="center"
             android:fontFamily="sans-serif-light"
             android:textColor="#FFFFFF"
-            android:text="Manage your Twitter lists easily."/>
+            android:text="@string/activity_login_subtitle"/>
 
         </RelativeLayout>
 

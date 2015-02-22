@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Twitter Lists</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_twitterlist_list">Twitter Lists</string>
     <string name="title_twitterlist_detail">TwitterList Detail</string>
@@ -27,7 +26,10 @@
     <string name="menu_twitter_list_log_out">Log Out</string>
     <string name="list_detail_pager_title_members">Members</string>
     <string name="list_detail_pager_title_nonmembers">Other people you follow</string>
-    <string name="pagination_loading_more_people">Loading more people...</string>
+    <string name="pagination_loading_more_people">Loading more people…</string>
     <string name="text_no_members_in_the_list">No members in the list.</string>
+    <string name="activity_login_title">Twitter List Manager</string>
+    <string name="activity_login_subtitle">Manage your Twitter lists easily.</string>
+    <string name="text_loading_3dots">Loading…</string>
 
 </resources>

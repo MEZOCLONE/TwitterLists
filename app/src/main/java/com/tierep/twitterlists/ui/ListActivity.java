@@ -135,8 +135,7 @@ public class ListActivity extends BaseActivity
             protected UserList doInBackground(Void... params) {
                 Twitter twitter = Session.getInstance().getTwitterInstance();
                 try {
-                    UserList result = twitter.createUserList(model.name, model.isPublicList, model.description);
-                    return result;
+                    return twitter.createUserList(model.name, model.isPublicList, model.description);
                 } catch (TwitterException e) {
                     Log.e("ERROR", "Error while creating new list", e);
                     return null;
