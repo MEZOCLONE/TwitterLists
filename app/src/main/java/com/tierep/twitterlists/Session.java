@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import twitter4j.AsyncTwitter;
-import twitter4j.AsyncTwitterFactory;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
@@ -37,7 +35,6 @@ public class Session {
 
     private Twitter twitterInstance = null;
     private TwitterCache twitterCacheInstance = null;
-    private AsyncTwitter asyncTwitterInstance = null;
 
     private long userId;
 
@@ -84,7 +81,7 @@ public class Session {
     public Twitter getTwitterInstance() {
         if (twitterInstance == null) {
             ConfigurationBuilder cb = new ConfigurationBuilder();
-            cb.setDebugEnabled(true)
+            cb.setDebugEnabled(true) // TODO disable logging for production
                     .setOAuthConsumerKey(TWITTER_KEY)
                     .setOAuthConsumerSecret(TWITTER_SECRET)
                     .setOAuthAccessToken(accessToken)
@@ -102,21 +99,6 @@ public class Session {
         return twitterCacheInstance;
     }
 
-    public AsyncTwitter getAsyncTwitterInstance() {
-        if (asyncTwitterInstance == null) {
-            ConfigurationBuilder cb = new ConfigurationBuilder();
-            cb.setDebugEnabled(true) // TODO disable logging for production
-                    .setOAuthConsumerKey(TWITTER_KEY)
-                    .setOAuthConsumerSecret(TWITTER_SECRET)
-                    .setOAuthAccessToken(accessToken)
-                    .setOAuthAccessTokenSecret(accessTokenSecret);
-
-            AsyncTwitterFactory factory = new AsyncTwitterFactory(cb.build());
-            asyncTwitterInstance = factory.getInstance();
-        }
-        return asyncTwitterInstance;
-    }
-
     /**
      * Clears the current session by removing any access tokings and clearing the current Twiter instances.
      * This can be used to log the user out of the app.
@@ -130,6 +112,8 @@ public class Session {
         editor.commit();
 
         // TODO implement further
+        twitterCacheInstance = null;
+        twitterInstance = null;
     }
 
     public static Session getInstance() {

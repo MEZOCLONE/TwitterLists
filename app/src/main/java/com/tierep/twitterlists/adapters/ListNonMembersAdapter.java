@@ -107,7 +107,7 @@ public class ListNonMembersAdapter extends UsersWithActionPagingAdapter {
             @Override
             protected PagableResponseList<User> doInBackground(Void... params) {
                 TwitterCache twitter = Session.getInstance().getTwitterCacheInstance();
-                List<User> listMembers = new LinkedList<User>();
+                List<User> listMembers = new LinkedList<>();
                 try {
                     PagableResponseList<User> response = null;
 

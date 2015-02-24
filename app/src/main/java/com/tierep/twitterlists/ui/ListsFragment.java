@@ -102,7 +102,7 @@ public class ListsFragment extends ListFragment {
                 protected LinkedList<UserList> doInBackground(Void... params) {
                     Twitter twitter = Session.getInstance().getTwitterInstance();
                     try {
-                        LinkedList<UserList> result = new LinkedList<UserList>();
+                        LinkedList<UserList> result = new LinkedList<>();
                         PagableResponseList<UserList> response = null;
                         do {
                             if (response == null) {
