@@ -30,6 +30,8 @@ import twitter4j.UserList;
  */
 public class ListDetailActivity extends BaseActivity implements DeleteListDialogFragment.DeleteListDialogListener, ManageListDialogFragment.ManageListDialogListener {
 
+    private static final String STATE_USERLIST = "ListDetailActivity_UserList";
+
     UserList userList;
 
     @Override
@@ -64,6 +66,8 @@ public class ListDetailActivity extends BaseActivity implements DeleteListDialog
             getFragmentManager().beginTransaction()
                     .add(R.id.twitterlist_detail_container, fragment)
                     .commit();
+        } else {
+            userList = (UserList) savedInstanceState.getSerializable(STATE_USERLIST);
         }
     }
 
@@ -147,25 +151,25 @@ public class ListDetailActivity extends BaseActivity implements DeleteListDialog
 
     @Override
     public void onManageListDialogPositiveClick(final ManageListDialogFragment.ManageListModel model) {
-        new AsyncTask<Void, Void, Boolean>() {
+        new AsyncTask<Void, Void, UserList>() {
             @Override
-            protected Boolean doInBackground(Void... params) {
+            protected UserList doInBackground(Void... params) {
                 Twitter twitter = Session.getInstance().getTwitterInstance();
                 try {
                     // TODO Het UserList object in fragment moet nu ook ge-upate worden, want anders krijgen we bug als we bijv. opnieuw een edit uitvoeren.
-                    twitter.updateUserList(userList.getId(), model.name, model.isPublicList, model.description);
-                    return true;
+                    return twitter.updateUserList(userList.getId(), model.name, model.isPublicList, model.description);
                 } catch (TwitterException e) {
                     Log.e("ERROR", "Error during updating list.", e);
-                    return false;
+                    return null;
                 }
             }
 
             @Override
-            protected void onPostExecute(Boolean result) {
+            protected void onPostExecute(UserList result) {
                 super.onPostExecute(result);
-                if (result) {
+                if (result != null) {
                     getSupportActionBar().setTitle(model.name);
+                    userList = result;
                 } else {
                     Toast.makeText(ListDetailActivity.this, getString(R.string.text_something_went_wrong), Toast.LENGTH_LONG).show();
                 }
@@ -176,5 +180,12 @@ public class ListDetailActivity extends BaseActivity implements DeleteListDialog
     @Override
     public void onManageListDialogNegativeClick(DialogFragment dialog) {
         // Do nothing
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(STATE_USERLIST, userList);
     }
 }
