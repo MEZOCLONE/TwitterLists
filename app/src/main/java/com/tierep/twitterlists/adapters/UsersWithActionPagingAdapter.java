@@ -20,6 +20,7 @@ import twitter4j.User;
 public abstract class UsersWithActionPagingAdapter extends UsersWithActionAdapter {
 
     public static final int SCROLLING_OFFSET = 5;
+    private boolean loading = false;
 
     /**
      * Constructor
@@ -56,7 +57,8 @@ public abstract class UsersWithActionPagingAdapter extends UsersWithActionAdapte
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (users.hasNext() && (SCROLLING_OFFSET == (users.size() - position))) {
+        if (!loading && users.hasNext() && (SCROLLING_OFFSET == (users.size() - position))) {
+            loading = true;
             fetchNewData();
             return super.getView(position, convertView, parent);
         } else if (users.hasNext() && position == users.size()) {
@@ -67,6 +69,10 @@ public abstract class UsersWithActionPagingAdapter extends UsersWithActionAdapte
     }
 
     public abstract void fetchNewData();
+
+    protected void finishedFetchingNewData() {
+        loading = false;
+    }
 
     private View inflateLoadingView(View convertView, ViewGroup parent) {
         View view = convertView;

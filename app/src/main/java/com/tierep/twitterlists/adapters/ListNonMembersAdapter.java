@@ -145,6 +145,7 @@ public class ListNonMembersAdapter extends UsersWithActionPagingAdapter {
                     actions.addAll(Collections.nCopies(respons.size(), R.drawable.member_add_touch));
                     users = respons;
                     notifyDataSetChanged();
+                    finishedFetchingNewData();
                 }
                 // TODO error value ( = null) beter afhandelen
             }
