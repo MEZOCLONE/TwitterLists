@@ -2,12 +2,15 @@ package com.tierep.twitterlists.ui;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -123,14 +126,27 @@ public class ListsFragment extends ListFragment {
 
                 @Override
                 protected void onPostExecute(LinkedList<UserList> result) {
-                    if (result != null) {
+                    if (result != null && result.size() == 0) {
+                        ListsFragment.this.userLists = result;
+                        setListAdapter(new ArrayAdapter<String>(getActivity(), 0, new String[] { "" }) {
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent) {
+                                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                return inflater.inflate(R.layout.twitter_lists_empty, parent, false);
+                            }
+
+                            @Override
+                            public boolean isEnabled(int position) {
+                                return false;
+                            }
+                        });
+                    } else if (result != null) {
                         ListsFragment.this.userLists = result;
                         setListAdapter(new TwitterListsAdapter(getActivity(), result));
                     } else {
                         Toast.makeText(getActivity(), getString(R.string.text_something_went_wrong), Toast.LENGTH_LONG).show();
                     }
                     // TODO in case of error permanemente melding geven (loading.. balk weghalen !!)
-                    // TODO ook speciaal geval afhandelen dat de user geen lijsten heeft (count = 0).
                 }
             }.execute();
         }
@@ -203,6 +219,19 @@ public class ListsFragment extends ListFragment {
         getListView().setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
+    }
+
+    public void addUserList(UserList userList) {
+        ListAdapter adapter = getListAdapter();
+        if (adapter instanceof TwitterListsAdapter) {
+            TwitterListsAdapter listAdapter = (TwitterListsAdapter) getListAdapter();
+            listAdapter.add(userList);
+            listAdapter.notifyDataSetChanged();
+        } else { // The adapter is the adapter used for displaying the empty results.
+            LinkedList<UserList> resultList = new LinkedList<>();
+            resultList.add(userList);
+            setListAdapter(new TwitterListsAdapter(getActivity(), resultList));
+        }
     }
 
     private void setActivatedPosition(int position) {

@@ -1,7 +1,6 @@
 package com.tierep.twitterlists.ui;
 
 import android.app.DialogFragment;
-import android.app.ListFragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.widget.Toast;
 
 import com.tierep.twitterlists.R;
 import com.tierep.twitterlists.Session;
-import com.tierep.twitterlists.TwitterListsAdapter;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -146,10 +144,8 @@ public class ListActivity extends BaseActivity
             protected void onPostExecute(UserList result) {
                 super.onPostExecute(result);
                 if (result != null) { // Success
-                    ListFragment listFragment = (ListFragment) getFragmentManager().findFragmentById(R.id.twitterlist_list);
-                    TwitterListsAdapter adapter = (TwitterListsAdapter) listFragment.getListAdapter();
-                    adapter.add(result);
-                    adapter.notifyDataSetChanged();
+                    ListsFragment listsFragment = (ListsFragment) getFragmentManager().findFragmentById(R.id.twitterlist_list);
+                    listsFragment.addUserList(result);
                 } else {
                     Toast.makeText(ListActivity.this, getString(R.string.text_something_went_wrong), Toast.LENGTH_LONG).show();
                 }
